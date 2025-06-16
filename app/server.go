@@ -8,7 +8,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 	"github.com/mhmmdrivaldhi/golang_ecommerce/app/config"
-	"github.com/mhmmdrivaldhi/golang_ecommerce/app/models"
+	"github.com/mhmmdrivaldhi/golang_ecommerce/app/database/migration"
 	"gorm.io/gorm"
 )
 
@@ -39,7 +39,7 @@ func Run() {
 	db := config.InitDB(cfg.DB)
 
 	// Models Migration
-	models.Migrate(db) 
+	migration.Migrate(db) 
 
 	var server = Server{}
 	server.Initialize(db, *cfg.App)

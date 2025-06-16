@@ -1,23 +1,25 @@
-package models
+package migration
 
 import (
 	"log"
 
+	"github.com/mhmmdrivaldhi/golang_ecommerce/app/models"
 	"gorm.io/gorm"
 )
 
 var ModelList = []interface{}{
-	&User{},
-	&Address{},
-	&Product{},
-	&Category{},
-	&ProductImage{},
-	&Section{},
-	&Order{},
-	&OrderItem{},
-	&OrderCustomer{},
-	&Payment{},
-	&Shipment{},
+
+	&models.User{},
+	&models.Address{},
+	&models.Product{},
+	&models.Category{},
+	&models.ProductImage{},
+	&models.Section{},
+	&models.Order{},
+	&models.OrderItem{},
+	&models.OrderCustomer{},
+	&models.Payment{},
+	&models.Shipment{},
 }
 
 func Migrate(db *gorm.DB) {
