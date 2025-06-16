@@ -9,6 +9,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/mhmmdrivaldhi/golang_ecommerce/app/config"
 	"github.com/mhmmdrivaldhi/golang_ecommerce/app/database/migration"
+	"github.com/mhmmdrivaldhi/golang_ecommerce/app/database/seeders"
 	"gorm.io/gorm"
 )
 
@@ -22,6 +23,9 @@ func (server *Server) Initialize(db *gorm.DB, appConfig config.AppConfig) {
 
 	server.DB = db
 	server.Routes()
+
+	seeders.UserSeed(server.DB)
+	seeders.ProductSeed(server.DB)
 }
 func (server *Server) Run(addr string) {
 	log.Printf("Server is running on port%s", addr)
