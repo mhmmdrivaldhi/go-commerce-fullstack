@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
+	"github.com/mhmmdrivaldhi/golang_ecommerce/app/cmd"
 	"github.com/mhmmdrivaldhi/golang_ecommerce/app/config"
-	"github.com/mhmmdrivaldhi/golang_ecommerce/app/database/migration"
-	"github.com/mhmmdrivaldhi/golang_ecommerce/app/database/seeders"
+	// "github.com/mhmmdrivaldhi/golang_ecommerce/app/database/seeders"
+	"github.com/urfave/cli"
 	"gorm.io/gorm"
 )
 
@@ -24,9 +26,10 @@ func (server *Server) Initialize(db *gorm.DB, appConfig config.AppConfig) {
 	server.DB = db
 	server.Routes()
 
-	seeders.UserSeed(server.DB)
-	seeders.ProductSeed(server.DB)
+	// seeders.UserSeed(server.DB)
+	// seeders.ProductSeed(server.DB)
 }
+
 func (server *Server) Run(addr string) {
 	log.Printf("Server is running on port%s", addr)
 	log.Fatal(http.ListenAndServe(addr, server.Router))
@@ -38,14 +41,30 @@ func Run() {
 		log.Fatalf("Error load .env file: %v", err)
 	}
 
-	// DB Configuration
-	cfg := config.LoadConfig()
-	db := config.InitDB(cfg.DB)
+	cmdApp := &cli.App{
+		Name: "go-commerce",
+		Usage: "Command Line Interface for Go-Commerce",
+		Commands: []cli.Command{
+			cmd.MigrateCommand,
+			cmd.SeedCommand,
+			{
+				Name: "serve",
+				Usage: "Run the HTTP server",
+				Action: func (c *cli.Context) error {
+					// Load Config and DB
+					cfg := config.LoadConfig()
+					db := config.InitDB(cfg.DB)
 
-	// Models Migration
-	migration.Migrate(db) 
-
-	var server = Server{}
-	server.Initialize(db, *cfg.App)
-	server.Run(":" + cfg.App.AppPort)
+					var server = Server{}
+					
+					server.Initialize(db, *cfg.App)
+					server.Run(":" + cfg.App.AppPort)
+					return nil
+				},
+			},
+		},
+	}
+	if err := cmdApp.Run(os.Args); err != nil {
+		log.Fatal(err)
+	}
 }
